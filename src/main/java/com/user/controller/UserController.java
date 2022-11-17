@@ -82,18 +82,18 @@ public class UserController {
     public ResponseEntity<FileResponse> uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("id") Long id) {
     try{
         //Upload image to Imgur server
-        service.uploadImage(image, id);
+        service.uploadImage(image.getOriginalFilename(), id);
         //Fetch user
         Optional<User> registeredUser = userRepository.findById(id);
         if (updatedUser.isEmpty())
             return ResponseEntity.notFound().build();
         user.setId(id);
-        user.setImage(image);
+        user.setImage(image.getOriginalFilename());
         userRepository.save(user);
         }catch(Exception e){
-        return new ResponseEntity<>(new FileResponse(fileName, "Image is not uploaded due to internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("Image is not uploaded due to internal error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-        return new ResponseEntity<>(new FileResponse(fileName, "Image successfully uploaded"), HttpStatus.OK);
+        return new ResponseEntity<>("Image successfully uploaded", HttpStatus.OK);
 
     }
 }
