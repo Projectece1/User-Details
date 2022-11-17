@@ -6,10 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SpringBootUserApplication {
-
-    @Autowired
-    StudentDataRestRepository repository;
-
     public static void main(String[] args) {
         SpringApplication.run(SpringBootUserApplication.class, args);
     }
