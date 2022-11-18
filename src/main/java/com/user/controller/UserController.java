@@ -18,6 +18,8 @@ import java.com.user.repository.UserRepository;
 
 @RestController
 public class UserController {
+    
+    private static final Logger logger = LogManager.getLogger(UserController.class)
 
     @Autowired
     private UserRepository userRepository;
@@ -26,10 +28,13 @@ public class UserController {
     @GetMapping("/users/{id}")
     public User retrieveUser(@PathVariable long id,@Param String userName, @Param String password) {
     Optional<User> registeredUser = userRepository.findById(id);
-        if (updatedUser.isEmpty())
+        if (updatedUser.isEmpty()) {
+            logger.debug("User not found in the data base");
             return ResponseEntity.notFound().build();
+        }
             
         if(!(registeredUser.getUserName().equals(user.getUserName()) && registeredUser.getPassword().equals(user.getPassword()))){
+            logger.debug("User provided invalid username and password");
             throw InCorrectCredentialsException("Invalid username and password..");
          }
 
@@ -40,11 +45,14 @@ public class UserController {
     public void removeUser(@PathVariable long id,@Param String userName, @Param String password) {
     
     Optional<User> registeredUser = userRepository.findById(id);
-        if (updatedUser.isEmpty())
+        if (updatedUser.isEmpty()) {
+            logger.debug("User not found in the data base");
             return ResponseEntity.notFound().build();
+        }
             
         if(!(registeredUser.getUserName().equals(user.getUserName()) && registeredUser.getPassword().equals(user.getPassword()))){
         {
+          logger.debug("User provided invalid username and password");
           throw InCorrectCredentialsException("Incorrect username and password..");
          }
         userRepository.deleteById(id);
@@ -56,6 +64,7 @@ public class UserController {
         try{
             User savedUser = userRepository.save(user);
         }catch(Exception e) {
+            logger.debug("Got exception while updating the data base"+ e.toString());
             return new ResponseEntity<>("Couldn't register the user due to internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>("Successfully registered the user"), HttpStatus.OK);
@@ -67,10 +76,13 @@ public class UserController {
 
         //Fetching user details from the data base
         Optional<User> registeredUser = userRepository.findById(id);
-        if (updatedUser.isEmpty())
+        if (updatedUser.isEmpty()) {
+            logger.debug("User not found in the data base");
             return ResponseEntity.notFound().build();
+        }
             
         if(!(registeredUser.getUserName().equals(user.getUserName()) && registeredUser.getPassword().equals(user.getPassword()))){
+          logger.debug("User provided invalid username and password");
           throw InCorrectCredentialsException("Incorrect username and password);
          }
         user.setId(id);
@@ -91,6 +103,7 @@ public class UserController {
         user.setImage(image.getOriginalFilename());
         userRepository.save(user);
         }catch(Exception e){
+        logger.debug("Got exception while uploading image to the Imgur client"+ e.toString()+ e.stackTrace());
         return new ResponseEntity<>("Image is not uploaded due to internal error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
         return new ResponseEntity<>("Image successfully uploaded", HttpStatus.OK);
